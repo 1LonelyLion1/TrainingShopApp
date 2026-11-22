@@ -1,0 +1,106 @@
+{
+  "@@locale": "ru",
+
+  "appTitle": "Рога и копыта",
+  "retry": "Повторить",
+  "refresh": "Обновить",
+  "goToCatalog": "Перейти в каталог",
+
+  "filtersTooltip": "Фильтры",
+  "navCatalog": "Каталог",
+  "navCart": "Корзина",
+  "navSettings": "Настройки",
+  "offlineNoData": "Нет соединения",
+  "offlineWithCache": "Нет соединения. Показаны сохранённые товары.",
+  "catalogLoadError": "Не удалось загрузить каталог",
+  "catalogEmptyTitle": "Каталог пуст",
+  "catalogEmptyMessage": "Товары пока не добавлены.",
+  "nothingFoundTitle": "Ничего не найдено",
+  "nothingFoundMessage": "Измените условия фильтра.",
+  "resetFilters": "Сбросить фильтры",
+
+  "filtersTitle": "Фильтры",
+  "filterCategory": "Категория",
+  "filterAll": "Все",
+  "filterPrice": "Цена, $",
+  "filterFrom": "От",
+  "filterTo": "До",
+  "filterAmountInvalid": "Введите сумму",
+  "filterRangeInvalid": "«От» больше, чем «до»",
+  "filterApply": "Применить",
+
+  "categoryElectronics": "Электроника",
+  "categoryJewelery": "Украшения",
+  "categoryMens": "Мужская одежда",
+  "categoryWomens": "Женская одежда",
+  "categoryNone": "Без категории",
+
+  "productNotFound": "Товар не найден",
+  "addToCart": "В корзину",
+  "inCart": "В корзине: {quantity}",
+  "@inCart": {
+    "placeholders": { "quantity": { "type": "int" } }
+  },
+  "goToCart": "В корзину",
+
+  "cartTitle": "Корзина",
+  "cartEmpty": "Корзина пуста",
+  "cartDecrease": "Уменьшить",
+  "cartIncrease": "Увеличить",
+  "cartRemove": "Удалить",
+  "cartTotal": "Итого",
+  "cartCheckout": "Оформить заказ",
+
+  "checkoutTitle": "Оформление заказа",
+  "checkoutSubmit": "Оформить · {total}",
+  "@checkoutSubmit": {
+    "placeholders": { "total": { "type": "String" } }
+  },
+  "fieldName": "Имя",
+  "fieldEmail": "Email",
+  "fieldPhone": "Телефон",
+  "fieldAddress": "Адрес",
+
+  "validationNameRequired": "Укажите имя",
+  "validationNameTooShort": "Имя слишком короткое",
+  "validationEmailRequired": "Укажите email",
+  "validationEmailInvalid": "Некорректный email",
+  "validationPhoneRequired": "Укажите телефон",
+  "validationPhoneInvalid": "Некорректный номер телефона",
+  "validationPhoneTooShort": "{count, plural, one{Минимум {count} цифра} few{Минимум {count} цифры} many{Минимум {count} цифр} other{Минимум {count} цифры}}",
+  "@validationPhoneTooShort": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "validationPhoneTooLong": "{count, plural, one{Максимум {count} цифра} few{Максимум {count} цифры} many{Максимум {count} цифр} other{Максимум {count} цифры}}",
+  "@validationPhoneTooLong": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "validationAddressRequired": "Укажите адрес",
+
+  "orderSuccessTitle": "Заказ оформлен",
+  "orderNumber": "Номер заказа: {number}",
+  "@orderNumber": {
+    "placeholders": { "number": { "type": "String" } }
+  },
+  "backToCatalog": "Вернуться в каталог",
+
+  "settingsTitle": "Настройки",
+  "settingsLanguage": "Язык",
+  "languageSystem": "Системный",
+  "languageRussian": "Русский",
+  "languageEnglish": "English",
+
+  "errorNoConnection": "Нет соединения. Проверьте интернет и повторите.",
+  "errorTimeout": "Сервер долго не отвечает. Попробуйте ещё раз.",
+  "errorServer": "Ошибка на стороне сервера ({code}). Попробуйте позже.",
+  "@errorServer": {
+    "placeholders": { "code": { "type": "String" } }
+  },
+  "errorClient": "Не удалось выполнить запрос ({code}). Обновите приложение или попробуйте позже.",
+  "@errorClient": {
+    "placeholders": { "code": { "type": "String" } }
+  },
+  "errorEmptyResponse": "Сервер вернул пустой ответ. Попробуйте ещё раз.",
+  "errorInvalidData": "Сервер вернул данные в неверном формате.",
+  "errorUnknown": "Что-то пошло не так. Попробуйте ещё раз."
+}

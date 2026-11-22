@@ -1,0 +1,106 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "Horns & Hooves",
+  "retry": "Retry",
+  "refresh": "Refresh",
+  "goToCatalog": "Go to catalog",
+
+  "filtersTooltip": "Filters",
+  "navCatalog": "Catalog",
+  "navCart": "Cart",
+  "navSettings": "Settings",
+  "offlineNoData": "No connection",
+  "offlineWithCache": "No connection. Showing saved products.",
+  "catalogLoadError": "Couldn't load the catalog",
+  "catalogEmptyTitle": "The catalog is empty",
+  "catalogEmptyMessage": "No products have been added yet.",
+  "nothingFoundTitle": "Nothing found",
+  "nothingFoundMessage": "Try changing the filters.",
+  "resetFilters": "Reset filters",
+
+  "filtersTitle": "Filters",
+  "filterCategory": "Category",
+  "filterAll": "All",
+  "filterPrice": "Price, $",
+  "filterFrom": "From",
+  "filterTo": "To",
+  "filterAmountInvalid": "Enter an amount",
+  "filterRangeInvalid": "“From” is greater than “To”",
+  "filterApply": "Apply",
+
+  "categoryElectronics": "Electronics",
+  "categoryJewelery": "Jewelry",
+  "categoryMens": "Men's clothing",
+  "categoryWomens": "Women's clothing",
+  "categoryNone": "Uncategorized",
+
+  "productNotFound": "Product not found",
+  "addToCart": "Add to cart",
+  "inCart": "In cart: {quantity}",
+  "@inCart": {
+    "placeholders": { "quantity": { "type": "int" } }
+  },
+  "goToCart": "Go to cart",
+
+  "cartTitle": "Cart",
+  "cartEmpty": "Your cart is empty",
+  "cartDecrease": "Decrease",
+  "cartIncrease": "Increase",
+  "cartRemove": "Remove",
+  "cartTotal": "Total",
+  "cartCheckout": "Check out",
+
+  "checkoutTitle": "Checkout",
+  "checkoutSubmit": "Place order · {total}",
+  "@checkoutSubmit": {
+    "placeholders": { "total": { "type": "String" } }
+  },
+  "fieldName": "Name",
+  "fieldEmail": "Email",
+  "fieldPhone": "Phone",
+  "fieldAddress": "Address",
+
+  "validationNameRequired": "Enter your name",
+  "validationNameTooShort": "Name is too short",
+  "validationEmailRequired": "Enter your email",
+  "validationEmailInvalid": "Invalid email",
+  "validationPhoneRequired": "Enter your phone number",
+  "validationPhoneInvalid": "Invalid phone number",
+  "validationPhoneTooShort": "{count, plural, one{At least {count} digit} other{At least {count} digits}}",
+  "@validationPhoneTooShort": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "validationPhoneTooLong": "{count, plural, one{At most {count} digit} other{At most {count} digits}}",
+  "@validationPhoneTooLong": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "validationAddressRequired": "Enter your address",
+
+  "orderSuccessTitle": "Order placed",
+  "orderNumber": "Order number: {number}",
+  "@orderNumber": {
+    "placeholders": { "number": { "type": "String" } }
+  },
+  "backToCatalog": "Back to catalog",
+
+  "settingsTitle": "Settings",
+  "settingsLanguage": "Language",
+  "languageSystem": "System",
+  "languageRussian": "Русский",
+  "languageEnglish": "English",
+
+  "errorNoConnection": "No connection. Check your internet and try again.",
+  "errorTimeout": "The server is taking too long to respond. Try again.",
+  "errorServer": "Server error ({code}). Try again later.",
+  "@errorServer": {
+    "placeholders": { "code": { "type": "String" } }
+  },
+  "errorClient": "The request failed ({code}). Update the app or try again later.",
+  "@errorClient": {
+    "placeholders": { "code": { "type": "String" } }
+  },
+  "errorEmptyResponse": "The server returned an empty response. Try again.",
+  "errorInvalidData": "The server returned data in an invalid format.",
+  "errorUnknown": "Something went wrong. Try again."
+}
