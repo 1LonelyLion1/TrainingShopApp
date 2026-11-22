@@ -3,7 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:horns_and_hooves_shop_app/core/database/app_database.dart';
 import 'package:horns_and_hooves_shop_app/core/di/injection.dart';
 import 'package:horns_and_hooves_shop_app/core/network/connectivity_service.dart';
+import 'package:horns_and_hooves_shop_app/features/cart/data/cart_api.dart';
 import 'package:horns_and_hooves_shop_app/features/cart/data/cart_storage.dart';
+import 'package:horns_and_hooves_shop_app/features/cart/data/cart_sync_service.dart';
 import 'package:horns_and_hooves_shop_app/features/cart/domain/cart.dart';
 import 'package:horns_and_hooves_shop_app/features/cart/presentation/cart_cubit.dart';
 import 'package:horns_and_hooves_shop_app/features/catalog/data/catalog_api.dart';
@@ -40,6 +42,8 @@ void main() {
     expect(getIt<CartStorage>(), isA<DriftCartStorage>());
     expect(getIt<ConnectivityService>(), isA<ConnectivityPlusService>());
     expect(getIt<CatalogRepository>(), isNotNull);
+    expect(getIt<CartApi>(), isA<DioCartApi>());
+    expect(getIt<CartSyncService>(), isNotNull);
     expect(identical(getIt<CatalogCubit>(), getIt<CatalogCubit>()), isTrue);
     await getIt<CatalogCubit>().close();
   });

@@ -12,7 +12,7 @@ Future<CartCubit> _pump(
   WidgetTester tester, [
   Cart initial = const Cart(),
 ]) async {
-  final cart = CartCubit(FakeCartStorage(), initial);
+  final cart = CartCubit(FakeCartStorage(), initial, Duration.zero);
   addTearDown(cart.close);
   await tester.pumpWidget(
     BlocProvider.value(
@@ -38,7 +38,7 @@ void main() {
     final cart = await _pump(tester);
 
     await tester.tap(find.text('В корзину'));
-    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 1));
 
     expect(cart.state.itemFor(1)?.quantity, 1);
     expect(find.text('В корзину'), findsNothing);
@@ -49,11 +49,11 @@ void main() {
     final cart = await _pump(tester, const Cart().add(product()));
 
     await tester.tap(find.byTooltip('Увеличить'));
-    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 1));
     expect(cart.state.itemFor(1)?.quantity, 2);
 
     await tester.tap(find.byTooltip('Уменьшить'));
-    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 1));
     expect(cart.state.itemFor(1)?.quantity, 1);
   });
 
@@ -62,7 +62,7 @@ void main() {
     expect(find.byTooltip('Уменьшить'), findsNothing);
 
     await tester.tap(find.byTooltip('Удалить'));
-    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 1));
 
     expect(cart.state.isEmpty, isTrue);
     expect(find.text('В корзину'), findsOneWidget);

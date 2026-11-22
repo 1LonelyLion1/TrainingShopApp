@@ -27,8 +27,22 @@ class ShopApp extends StatefulWidget {
 class _ShopAppState extends State<ShopApp> {
   late final GoRouter _router = createRouter();
 
+  // Система может завершить приложение в фоне, не дождавшись таймера корзины.
+  late final AppLifecycleListener _lifecycle = AppLifecycleListener(
+    onStateChange: (state) {
+      if (state != AppLifecycleState.resumed) widget.cart.flush();
+    },
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    _lifecycle;
+  }
+
   @override
   void dispose() {
+    _lifecycle.dispose();
     _router.dispose();
     super.dispose();
   }

@@ -18,8 +18,12 @@ import 'package:horns_and_hooves_shop_app/core/database/app_database.dart'
 import 'package:horns_and_hooves_shop_app/core/di/app_module.dart' as _i215;
 import 'package:horns_and_hooves_shop_app/core/network/connectivity_service.dart'
     as _i649;
+import 'package:horns_and_hooves_shop_app/features/cart/data/cart_api.dart'
+    as _i26;
 import 'package:horns_and_hooves_shop_app/features/cart/data/cart_storage.dart'
     as _i139;
+import 'package:horns_and_hooves_shop_app/features/cart/data/cart_sync_service.dart'
+    as _i93;
 import 'package:horns_and_hooves_shop_app/features/cart/presentation/cart_cubit.dart'
     as _i891;
 import 'package:horns_and_hooves_shop_app/features/catalog/data/catalog_api.dart'
@@ -50,6 +54,7 @@ extension GetItInjectableX on _i174.GetIt {
     final appModule = _$AppModule();
     gh.lazySingleton<_i361.Dio>(() => appModule.dio);
     gh.lazySingleton<_i895.Connectivity>(() => appModule.connectivity);
+    gh.lazySingleton<_i26.CartApi>(() => _i26.DioCartApi(gh<_i361.Dio>()));
     gh.lazySingleton<_i673.CatalogApi>(
       () => _i673.DioCatalogApi(gh<_i361.Dio>()),
     );
@@ -91,6 +96,15 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i371.CheckoutCubit>(
       () => _i371.CheckoutCubit(gh<_i891.CartCubit>()),
+    );
+    gh.lazySingleton<_i93.CartSyncService>(
+      () => _i93.CartSyncService(
+        gh<_i26.CartApi>(),
+        gh<_i139.CartStorage>(),
+        gh<_i89.CatalogRepository>(),
+        gh<_i891.CartCubit>(),
+        gh<_i649.ConnectivityService>(),
+      ),
     );
     return this;
   }

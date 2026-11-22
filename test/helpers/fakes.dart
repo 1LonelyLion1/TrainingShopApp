@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:horns_and_hooves_shop_app/core/network/connectivity_service.dart';
+import 'package:horns_and_hooves_shop_app/core/error/app_failure.dart';
+import 'package:horns_and_hooves_shop_app/features/cart/data/cart_api.dart';
 import 'package:horns_and_hooves_shop_app/features/cart/data/cart_storage.dart';
 import 'package:horns_and_hooves_shop_app/features/cart/domain/cart.dart';
 import 'package:horns_and_hooves_shop_app/features/catalog/data/catalog_api.dart';
@@ -87,6 +89,8 @@ class FakeLocaleStorage implements LocaleStorage {
 class FakeCartStorage implements CartStorage {
   Cart saved = const Cart();
   final List<Cart> history = [];
+  int localRevision = 0;
+  int? syncedRevision;
 
   @override
   Future<Cart> read() async => saved;
@@ -95,5 +99,50 @@ class FakeCartStorage implements CartStorage {
   Future<void> write(Cart cart) async {
     saved = cart;
     history.add(cart);
+    localRevision++;
+  }
+
+  @override
+  Future<CartSyncSnapshot> readSyncSnapshot() async => CartSyncSnapshot(
+    cart: saved,
+    localRevision: localRevision,
+    syncedRevision: syncedRevision,
+  );
+
+  @override
+  Future<void> markSynced(int revision) async => syncedRevision = revision;
+
+  @override
+  Future<bool> importRemote(Cart cart) async {
+    if (!saved.isEmpty || localRevision != 0 || syncedRevision != null) {
+      return false;
+    }
+    saved = cart;
+    syncedRevision = 0;
+    return true;
+  }
+}
+
+class FakeCartApi implements CartApi {
+  FakeCartApi({this.remote = const []});
+
+  List<CartLine> remote;
+  AppFailure? failure;
+  Completer<void>? updateGate;
+  int fetchCalls = 0;
+  final List<List<CartLine>> updates = [];
+
+  @override
+  Future<List<CartLine>> fetchCart(int cartId) async {
+    fetchCalls++;
+    if (failure != null) throw failure!;
+    return remote;
+  }
+
+  @override
+  Future<void> updateCart(int cartId, List<CartLine> lines) async {
+    if (failure != null) throw failure!;
+    updates.add(lines);
+    await updateGate?.future;
   }
 }

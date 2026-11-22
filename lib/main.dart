@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 
 import 'app/app.dart';
 import 'core/di/injection.dart';
+import 'features/cart/data/cart_sync_service.dart';
 import 'features/cart/presentation/cart_cubit.dart';
 import 'features/catalog/presentation/catalog_cubit.dart';
 import 'features/settings/presentation/locale_cubit.dart';
@@ -22,5 +23,11 @@ Future<void> main() async {
       locale: getIt<LocaleCubit>(),
     ),
   );
-  unawaited(catalog.start());
+  unawaited(_startData(catalog));
+}
+
+/// Корзине нужны данные товаров, поэтому она синхронизируется после каталога.
+Future<void> _startData(CatalogCubit catalog) async {
+  await catalog.start();
+  await getIt<CartSyncService>().start();
 }

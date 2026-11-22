@@ -59,16 +59,79 @@ void main() {
   });
 
   group('CartCubit', () {
-    test('сохраняет каждое изменение в порядке вызовов', () async {
+    testWidgets('количество сохраняется через секунду после нажатия', (
+      tester,
+    ) async {
       final storage = FakeCartStorage();
       final cubit = CartCubit(storage);
+      await cubit.add(product());
+      storage.history.clear();
 
-      cubit.add(product());
       cubit.increment(1);
-      await cubit.decrement(1);
+      expect(cubit.state.itemFor(1)?.quantity, 2);
 
-      expect(storage.history.map((c) => c.totalQuantity), [1, 2, 1]);
-      expect(storage.saved, cubit.state);
+      await tester.pump(const Duration(milliseconds: 999));
+      expect(storage.history, isEmpty);
+
+      await tester.pump(const Duration(milliseconds: 1));
+      expect(storage.history.single.itemFor(1)?.quantity, 2);
+      await cubit.close();
+    });
+
+    testWidgets('каждое нажатие перезапускает таймер', (tester) async {
+      final storage = FakeCartStorage();
+      final cubit = CartCubit(storage);
+      await cubit.add(product());
+      storage.history.clear();
+
+      cubit.increment(1);
+      await tester.pump(const Duration(milliseconds: 900));
+      cubit.increment(1);
+      await tester.pump(const Duration(milliseconds: 900));
+      cubit.decrement(1);
+      await tester.pump(const Duration(milliseconds: 900));
+      cubit.increment(1);
+      await tester.pump(const Duration(milliseconds: 999));
+      expect(storage.history, isEmpty);
+
+      await tester.pump(const Duration(milliseconds: 1));
+      expect(storage.history.single.itemFor(1)?.quantity, 3);
+      await tester.pump(const Duration(seconds: 5));
+      expect(storage.history, hasLength(1));
+      await cubit.close();
+    });
+
+    testWidgets('удаление сохраняется сразу и отменяет таймер', (tester) async {
+      final storage = FakeCartStorage();
+      final cubit = CartCubit(storage);
+      await cubit.add(product());
+      await cubit.add(product(id: 2));
+      storage.history.clear();
+
+      cubit.increment(1);
+      await cubit.remove(2);
+
+      expect(storage.history.single.itemFor(1)?.quantity, 2);
+      expect(storage.history.single.contains(2), isFalse);
+      await tester.pump(const Duration(seconds: 2));
+      expect(storage.history, hasLength(1));
+      await cubit.close();
+    });
+
+    testWidgets('flush сохраняет отложенное изменение один раз', (
+      tester,
+    ) async {
+      final storage = FakeCartStorage();
+      final cubit = CartCubit(storage);
+      await cubit.add(product());
+      storage.history.clear();
+
+      cubit.increment(1);
+      await cubit.flush();
+
+      expect(storage.saved.itemFor(1)?.quantity, 2);
+      await tester.pump(const Duration(seconds: 2));
+      expect(storage.history, hasLength(1));
       await cubit.close();
     });
 
@@ -76,7 +139,7 @@ void main() {
       final cubit = CartCubit(FakeCartStorage());
       await cubit.add(product());
 
-      await cubit.decrement(1);
+      cubit.decrement(1);
 
       expect(cubit.state.itemFor(1)?.quantity, 1);
       await cubit.close();
@@ -86,7 +149,7 @@ void main() {
       final storage = FakeCartStorage();
       final first = CartCubit(storage);
       await first.add(product(priceCents: 500));
-      await first.increment(1);
+      first.increment(1);
       await first.close();
 
       final restored = CartCubit(storage, await storage.read());

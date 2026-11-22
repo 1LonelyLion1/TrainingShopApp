@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:horns_and_hooves_shop_app/app/app.dart';
+import 'package:horns_and_hooves_shop_app/features/cart/domain/cart.dart';
 import 'package:horns_and_hooves_shop_app/features/cart/presentation/cart_cubit.dart';
 import 'package:horns_and_hooves_shop_app/features/cart/presentation/cart_screen.dart';
 import 'package:horns_and_hooves_shop_app/features/catalog/data/catalog_repository.dart';
@@ -12,7 +13,11 @@ import 'package:horns_and_hooves_shop_app/features/settings/presentation/locale_
 
 import '../helpers/fakes.dart';
 
-Future<CartCubit> _pumpApp(WidgetTester tester) async {
+Future<CartCubit> _pumpApp(
+  WidgetTester tester, {
+  FakeCartStorage? storage,
+  Duration saveDelay = Duration.zero,
+}) async {
   final catalog = CatalogCubit(
     repository: CatalogRepository(
       api: FakeCatalogApi(() async => [product()]),
@@ -20,7 +25,7 @@ Future<CartCubit> _pumpApp(WidgetTester tester) async {
     ),
     connectivity: FakeConnectivity(),
   );
-  final cart = CartCubit(FakeCartStorage());
+  final cart = CartCubit(storage ?? FakeCartStorage(), const Cart(), saveDelay);
   addTearDown(catalog.close);
   final locale = LocaleCubit(FakeLocaleStorage('ru'), const Locale('ru'));
   addTearDown(cart.close);
@@ -62,13 +67,38 @@ void main() {
     final cart = await _pumpApp(tester);
 
     await cart.add(product());
-    await cart.increment(1);
+    cart.increment(1);
     await tester.pumpAndSettle();
 
     expect(
       find.descendant(of: find.byType(NavigationBar), matching: find.text('2')),
       findsOneWidget,
     );
+  });
+
+  testWidgets('уход в фон сразу сохраняет отложенное количество', (
+    tester,
+  ) async {
+    final storage = FakeCartStorage();
+    final cart = await _pumpApp(
+      tester,
+      storage: storage,
+      saveDelay: const Duration(seconds: 1),
+    );
+    addTearDown(
+      () => tester.binding.handleAppLifecycleStateChanged(
+        AppLifecycleState.resumed,
+      ),
+    );
+    await cart.add(product());
+
+    cart.increment(1);
+    expect(storage.saved.itemFor(1)?.quantity, 1);
+
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    await tester.pump();
+
+    expect(storage.saved.itemFor(1)?.quantity, 2);
   });
 
   testWidgets('нижний отступ панели ограничен', (tester) async {
