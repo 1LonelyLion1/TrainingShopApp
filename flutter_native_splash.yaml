@@ -1,0 +1,21 @@
+# Перегенерация: dart run flutter_native_splash:create
+# Цвета фона совпадают с surface светлой и тёмной темы приложения.
+flutter_native_splash:
+  color: "#fff8f6"
+  image: assets/splash/logo_light.png
+  color_dark: "#1a110e"
+  image_dark: assets/splash/logo_dark.png
+
+  # Android 12+ показывает только круглый значок, поэтому здесь эмблема без текста.
+  android_12:
+    color: "#fff8f6"
+    image: assets/splash/emblem_light.png
+    color_dark: "#1a110e"
+    image_dark: assets/splash/emblem_dark.png
+
+  # Без этой настройки генератор удаляет фиксацию ориентации из манифеста.
+  android_screen_orientation: portrait
+
+  android: true
+  ios: true
+  web: false
