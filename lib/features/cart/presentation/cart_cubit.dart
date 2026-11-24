@@ -2,13 +2,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../catalog/domain/product.dart';
-import '../data/cart_storage.dart';
 import '../domain/cart.dart';
+import '../domain/usecases/save_cart.dart';
 
 class CartCubit extends Cubit<Cart> {
-  CartCubit(this._storage, [super.initial = const Cart()]);
+  CartCubit(this._saveCart, [super.initial = const Cart()]);
 
-  final CartStorage _storage;
+  final SaveCart _saveCart;
   Future<void> _lastWrite = Future.value();
 
   Future<void> add(Product product) => _update(state.add(product));
@@ -35,7 +35,7 @@ class CartCubit extends Cubit<Cart> {
     emit(next);
     return _lastWrite = _lastWrite.then((_) async {
       try {
-        await _storage.write(next);
+        await _saveCart(next);
       } on Object catch (error) {
         debugPrint('Failed to save cart: $error');
       }

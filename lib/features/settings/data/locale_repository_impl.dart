@@ -2,17 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart' show LazySingleton;
 
 import '../../../core/database/app_database.dart';
+import '../domain/locale_repository.dart';
 
-abstract interface class LocaleStorage {
-  /// Код языка или null, если используется язык системы.
-  Future<String?> read();
-
-  Future<void> write(String? languageCode);
-}
-
-@LazySingleton(as: LocaleStorage)
-class DriftLocaleStorage implements LocaleStorage {
-  DriftLocaleStorage(this._db);
+@LazySingleton(as: LocaleRepository)
+class DriftLocaleRepository implements LocaleRepository {
+  DriftLocaleRepository(this._db);
 
   static const _key = 'locale';
 

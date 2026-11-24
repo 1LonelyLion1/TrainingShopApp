@@ -2,13 +2,13 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../l10n/l10n.dart';
-import '../data/locale_storage.dart';
+import '../domain/usecases/save_language.dart';
 
 /// Состояние — выбранный язык; null означает язык системы.
 class LocaleCubit extends Cubit<Locale?> {
-  LocaleCubit(this._storage, [super.initial]);
+  LocaleCubit(this._saveLanguage, [super.initial]);
 
-  final LocaleStorage _storage;
+  final SaveLanguage _saveLanguage;
   Future<void> _lastWrite = Future.value();
 
   /// Неизвестный код из хранилища сводится к языку системы.
@@ -24,7 +24,7 @@ class LocaleCubit extends Cubit<Locale?> {
     emit(locale);
     return _lastWrite = _lastWrite.then((_) async {
       try {
-        await _storage.write(locale?.languageCode);
+        await _saveLanguage(locale?.languageCode);
       } on Object catch (error) {
         debugPrint('Failed to save locale: $error');
       }

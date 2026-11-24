@@ -1,6 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:horns_and_hooves_shop_app/features/cart/domain/usecases/save_cart.dart';
 import 'package:horns_and_hooves_shop_app/features/cart/presentation/cart_cubit.dart';
 import 'package:horns_and_hooves_shop_app/features/checkout/domain/checkout_validators.dart';
+import 'package:horns_and_hooves_shop_app/features/checkout/domain/usecases/place_order.dart';
 import 'package:horns_and_hooves_shop_app/features/checkout/presentation/checkout_cubit.dart';
 
 import '../../helpers/fakes.dart';
@@ -26,9 +28,9 @@ void main() {
   });
 
   test('заказ создаётся один раз и очищает корзину', () async {
-    final cart = CartCubit(FakeCartStorage());
+    final cart = CartCubit(SaveCart(FakeCartRepository()));
     await cart.add(product());
-    final checkout = CheckoutCubit(cart);
+    final checkout = CheckoutCubit(cart, const PlaceOrder());
 
     await checkout.submit();
     expect(checkout.state.orderNumber, isNull);

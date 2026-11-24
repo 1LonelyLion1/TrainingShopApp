@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:horns_and_hooves_shop_app/core/database/app_database.dart';
-import 'package:horns_and_hooves_shop_app/features/cart/data/cart_storage.dart';
+import 'package:horns_and_hooves_shop_app/features/cart/data/cart_repository_impl.dart';
 import 'package:horns_and_hooves_shop_app/features/cart/domain/cart.dart';
 import 'package:horns_and_hooves_shop_app/features/catalog/data/catalog_cache.dart';
 
@@ -39,9 +39,9 @@ void main() {
     });
   });
 
-  group('DriftCartStorage', () {
+  group('DriftCartRepository', () {
     test('сохраняет позиции, количество и порядок', () async {
-      final storage = DriftCartStorage(db);
+      final storage = DriftCartRepository(db);
       final cart = const Cart()
           .add(product(id: 7))
           .add(product(id: 2))
@@ -53,7 +53,7 @@ void main() {
     });
 
     test('очистка удаляет все позиции', () async {
-      final storage = DriftCartStorage(db);
+      final storage = DriftCartRepository(db);
       await storage.write(const Cart().add(product()));
 
       await storage.write(const Cart());
@@ -62,7 +62,7 @@ void main() {
     });
 
     test('корзина не зависит от таблицы каталога', () async {
-      final storage = DriftCartStorage(db);
+      final storage = DriftCartRepository(db);
       final cart = const Cart().add(product(id: 1));
       await storage.write(cart);
 
@@ -78,12 +78,12 @@ void main() {
       final cart = const Cart().add(product()).setQuantity(1, 4);
 
       final first = AppDatabase(NativeDatabase(file));
-      await DriftCartStorage(first).write(cart);
+      await DriftCartRepository(first).write(cart);
       await first.close();
 
       final second = AppDatabase(NativeDatabase(file));
       addTearDown(second.close);
-      expect(await DriftCartStorage(second).read(), cart);
+      expect(await DriftCartRepository(second).read(), cart);
     });
   });
 }

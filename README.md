@@ -46,10 +46,13 @@ lib/
     catalog/  data, domain, presentation
     cart/     data, domain, presentation
     checkout/ domain, presentation
-    settings/ data, presentation
+    settings/ data, domain, presentation
 ```
 
-- Зависимости направлены так: UI → Cubit → Repository → API и кеш.
+- Зависимости направлены так: UI → Cubit → use case → интерфейс репозитория (domain) ← реализация (data) → API и кеш.
+- Каждый use case выполняет одно действие: `GetCachedCatalog`, `RefreshCatalog`, `GetCart`, `SaveCart`, `GetSavedLanguage`, `SaveLanguage`, `PlaceOrder`. Cubit не знает о репозиториях и drift.
+- Правила корзины и фильтров живут в сущностях `Cart` и `CatalogFilter`, поэтому для них отдельные use case не нужны.
+- `PlaceOrder` пока только проверяет корзину и создаёт номер локально, так как Fake Store API не принимает заказы. Отправка на сервер добавится в него без изменений UI.
 - `get_it` используется только при старте и для создания `CheckoutCubit`. Экраны получают остальные Cubit через `BlocProvider`, поэтому виджет-тесты обходятся без контейнера.
 - Цены хранятся в целых центах, поэтому итог корзины не накапливает ошибку `double`.
 - Каталог открывается сразу из кеша и обновляется в фоне.

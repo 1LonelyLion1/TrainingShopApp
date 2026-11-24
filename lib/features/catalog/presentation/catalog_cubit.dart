@@ -5,17 +5,22 @@ import 'package:injectable/injectable.dart' show lazySingleton;
 
 import '../../../core/error/app_failure.dart';
 import '../../../core/network/connectivity_service.dart';
-import '../data/catalog_repository.dart';
 import '../domain/catalog_filter.dart';
 import '../domain/product.dart';
+import '../domain/usecases/get_cached_catalog.dart';
+import '../domain/usecases/refresh_catalog.dart';
 import 'catalog_state.dart';
 
 @lazySingleton
 class CatalogCubit extends Cubit<CatalogState> {
-  CatalogCubit({required this._repository, required this._connectivity})
-    : super(const CatalogState());
+  CatalogCubit({
+    required this._getCachedCatalog,
+    required this._refreshCatalog,
+    required this._connectivity,
+  }) : super(const CatalogState());
 
-  final CatalogRepository _repository;
+  final GetCachedCatalog _getCachedCatalog;
+  final RefreshCatalog _refreshCatalog;
   final ConnectivityService _connectivity;
 
   StreamSubscription<bool>? _connectivitySubscription;
@@ -43,7 +48,7 @@ class CatalogCubit extends Cubit<CatalogState> {
       if (isClosed) return;
       emit(state.copyWith(isRefreshing: true));
 
-      final products = await _repository.refresh();
+      final products = await _refreshCatalog();
       if (isClosed) return;
       _emitLoaded(products);
     } on AppFailure catch (failure) {
@@ -76,7 +81,7 @@ class CatalogCubit extends Cubit<CatalogState> {
   Future<void> _showCachedIfNeeded() async {
     if (state.products.isNotEmpty) return;
     emit(state.copyWith(status: CatalogStatus.loading, failure: () => null));
-    final cached = await _repository.readCached();
+    final cached = await _getCachedCatalog();
     if (isClosed || cached.isEmpty) return;
     emit(state.copyWith(status: CatalogStatus.success, products: cached));
   }

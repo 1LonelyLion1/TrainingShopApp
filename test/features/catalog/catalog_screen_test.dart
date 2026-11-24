@@ -6,8 +6,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:horns_and_hooves_shop_app/core/error/app_failure.dart';
 import 'package:horns_and_hooves_shop_app/core/error/app_failure_l10n.dart';
+import 'package:horns_and_hooves_shop_app/features/cart/domain/usecases/save_cart.dart';
 import 'package:horns_and_hooves_shop_app/features/cart/presentation/cart_cubit.dart';
-import 'package:horns_and_hooves_shop_app/features/catalog/data/catalog_repository.dart';
+import 'package:horns_and_hooves_shop_app/features/catalog/data/catalog_repository_impl.dart';
 import 'package:horns_and_hooves_shop_app/features/catalog/domain/product.dart';
 import 'package:horns_and_hooves_shop_app/features/catalog/presentation/catalog_cubit.dart';
 import 'package:horns_and_hooves_shop_app/features/catalog/presentation/catalog_screen.dart';
@@ -20,11 +21,14 @@ Future<CatalogCubit> _pump(
   FakeCatalogApi api, {
   FakeCatalogCache? cache,
 }) async {
-  final catalog = CatalogCubit(
-    repository: CatalogRepository(api: api, cache: cache ?? FakeCatalogCache()),
+  final catalog = catalogCubit(
+    repository: CatalogRepositoryImpl(
+      api: api,
+      cache: cache ?? FakeCatalogCache(),
+    ),
     connectivity: FakeConnectivity(),
   );
-  final cart = CartCubit(FakeCartStorage());
+  final cart = CartCubit(SaveCart(FakeCartRepository()));
   addTearDown(catalog.close);
   addTearDown(cart.close);
   final router = GoRouter(

@@ -2,10 +2,12 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 
-import '../../features/cart/data/cart_storage.dart';
+import '../../features/cart/domain/usecases/get_cart.dart';
+import '../../features/cart/domain/usecases/save_cart.dart';
 import '../../features/cart/presentation/cart_cubit.dart';
 import '../../features/catalog/data/catalog_api.dart';
-import '../../features/settings/data/locale_storage.dart';
+import '../../features/settings/domain/usecases/get_saved_language.dart';
+import '../../features/settings/domain/usecases/save_language.dart';
 import '../../features/settings/presentation/locale_cubit.dart';
 import '../database/app_database.dart';
 
@@ -26,12 +28,15 @@ abstract class AppModule {
   /// Корзина читается до старта UI, чтобы ранние действия её не перезаписали.
   @preResolve
   @singleton
-  Future<CartCubit> cartCubit(CartStorage storage) async =>
-      CartCubit(storage, await storage.read());
+  Future<CartCubit> cartCubit(GetCart getCart, SaveCart saveCart) async =>
+      CartCubit(saveCart, await getCart());
 
   /// Язык читается до старта UI, чтобы интерфейс не мигал другим языком.
   @preResolve
   @singleton
-  Future<LocaleCubit> localeCubit(LocaleStorage storage) async =>
-      LocaleCubit(storage, LocaleCubit.parse(await storage.read()));
+  Future<LocaleCubit> localeCubit(
+    GetSavedLanguage getSavedLanguage,
+    SaveLanguage saveLanguage,
+  ) async =>
+      LocaleCubit(saveLanguage, LocaleCubit.parse(await getSavedLanguage()));
 }

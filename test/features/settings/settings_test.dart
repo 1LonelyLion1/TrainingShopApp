@@ -6,26 +6,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:horns_and_hooves_shop_app/app/app.dart';
 import 'package:horns_and_hooves_shop_app/core/database/app_database.dart';
-import 'package:horns_and_hooves_shop_app/features/cart/data/cart_storage.dart';
+import 'package:horns_and_hooves_shop_app/features/cart/data/cart_repository_impl.dart';
+import 'package:horns_and_hooves_shop_app/features/cart/domain/usecases/save_cart.dart';
 import 'package:horns_and_hooves_shop_app/features/cart/presentation/cart_cubit.dart';
-import 'package:horns_and_hooves_shop_app/features/catalog/data/catalog_repository.dart';
-import 'package:horns_and_hooves_shop_app/features/catalog/presentation/catalog_cubit.dart';
-import 'package:horns_and_hooves_shop_app/features/settings/data/locale_storage.dart';
+import 'package:horns_and_hooves_shop_app/features/catalog/data/catalog_repository_impl.dart';
+import 'package:horns_and_hooves_shop_app/features/settings/data/locale_repository_impl.dart';
+import 'package:horns_and_hooves_shop_app/features/settings/domain/usecases/save_language.dart';
 import 'package:horns_and_hooves_shop_app/features/settings/presentation/locale_cubit.dart';
 
 import '../../helpers/fakes.dart';
 
-Future<FakeLocaleStorage> _pumpApp(WidgetTester tester, String? saved) async {
-  final storage = FakeLocaleStorage(saved);
-  final catalog = CatalogCubit(
-    repository: CatalogRepository(
+Future<FakeLocaleRepository> _pumpApp(
+  WidgetTester tester,
+  String? saved,
+) async {
+  final storage = FakeLocaleRepository(saved);
+  final catalog = catalogCubit(
+    repository: CatalogRepositoryImpl(
       api: FakeCatalogApi(() async => [product()]),
       cache: FakeCatalogCache(),
     ),
     connectivity: FakeConnectivity(),
   );
-  final cart = CartCubit(FakeCartStorage());
-  final locale = LocaleCubit(storage, LocaleCubit.parse(saved));
+  final cart = CartCubit(SaveCart(FakeCartRepository()));
+  final locale = LocaleCubit(SaveLanguage(storage), LocaleCubit.parse(saved));
   addTearDown(catalog.close);
   addTearDown(cart.close);
   addTearDown(locale.close);
@@ -104,14 +108,14 @@ void main() {
     expect(keys('lib/l10n/app_en.arb'), keys('lib/l10n/app_ru.arb'));
   });
 
-  group('DriftLocaleStorage', () {
+  group('DriftLocaleRepository', () {
     late AppDatabase db;
 
     setUp(() => db = AppDatabase(NativeDatabase.memory()));
     tearDown(() => db.close());
 
     test('сохраняет, заменяет и очищает язык', () async {
-      final storage = DriftLocaleStorage(db);
+      final storage = DriftLocaleRepository(db);
       expect(await storage.read(), isNull);
 
       await storage.write('en');
@@ -151,10 +155,10 @@ void main() {
     );
     addTearDown(db.close);
 
-    final cart = await DriftCartStorage(db).read();
-    await DriftLocaleStorage(db).write('en');
+    final cart = await DriftCartRepository(db).read();
+    await DriftLocaleRepository(db).write('en');
 
     expect(cart.itemFor(7)?.quantity, 3);
-    expect(await DriftLocaleStorage(db).read(), 'en');
+    expect(await DriftLocaleRepository(db).read(), 'en');
   });
 }

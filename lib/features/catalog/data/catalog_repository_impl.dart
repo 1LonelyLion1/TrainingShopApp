@@ -1,24 +1,25 @@
 import 'package:flutter/foundation.dart';
-import 'package:injectable/injectable.dart' show lazySingleton;
+import 'package:injectable/injectable.dart' show LazySingleton;
 
 import '../../../core/error/app_failure.dart';
+import '../domain/catalog_repository.dart';
 import '../domain/product.dart';
 import 'catalog_api.dart';
 import 'catalog_cache.dart';
 
-@lazySingleton
-class CatalogRepository {
-  CatalogRepository({required this._api, required this._cache});
+@LazySingleton(as: CatalogRepository)
+class CatalogRepositoryImpl implements CatalogRepository {
+  CatalogRepositoryImpl({required this._api, required this._cache});
 
   final CatalogApi _api;
   final CatalogCache _cache;
 
+  @override
   Future<List<Product>> readCached() => _cache.read();
 
-  /// Загружает каталог и обновляет кеш. Бросает [AppFailure].
-  ///
   /// Пустой список в кеш не пишется: иначе единичный сбой API
   /// стёр бы последние товары, доступные офлайн.
+  @override
   Future<List<Product>> refresh() async {
     final List<Product> products;
     try {

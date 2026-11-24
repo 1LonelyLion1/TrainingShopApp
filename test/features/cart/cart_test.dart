@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:horns_and_hooves_shop_app/features/cart/domain/cart.dart';
+import 'package:horns_and_hooves_shop_app/features/cart/domain/usecases/save_cart.dart';
 import 'package:horns_and_hooves_shop_app/features/cart/presentation/cart_cubit.dart';
 
 import '../../helpers/fakes.dart';
@@ -60,8 +61,8 @@ void main() {
 
   group('CartCubit', () {
     test('сохраняет каждое изменение в порядке вызовов', () async {
-      final storage = FakeCartStorage();
-      final cubit = CartCubit(storage);
+      final storage = FakeCartRepository();
+      final cubit = CartCubit(SaveCart(storage));
 
       cubit.add(product());
       cubit.increment(1);
@@ -73,7 +74,7 @@ void main() {
     });
 
     test('уменьшение не опускает количество ниже единицы', () async {
-      final cubit = CartCubit(FakeCartStorage());
+      final cubit = CartCubit(SaveCart(FakeCartRepository()));
       await cubit.add(product());
 
       await cubit.decrement(1);
@@ -83,21 +84,21 @@ void main() {
     });
 
     test('корзина восстанавливается из хранилища', () async {
-      final storage = FakeCartStorage();
-      final first = CartCubit(storage);
+      final storage = FakeCartRepository();
+      final first = CartCubit(SaveCart(storage));
       await first.add(product(priceCents: 500));
       await first.increment(1);
       await first.close();
 
-      final restored = CartCubit(storage, await storage.read());
+      final restored = CartCubit(SaveCart(storage), await storage.read());
 
       expect(restored.state.totalCents, 1000);
       await restored.close();
     });
 
     test('очистка сохраняет пустую корзину', () async {
-      final storage = FakeCartStorage();
-      final cubit = CartCubit(storage);
+      final storage = FakeCartRepository();
+      final cubit = CartCubit(SaveCart(storage));
       await cubit.add(product());
 
       await cubit.clear();

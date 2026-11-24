@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:horns_and_hooves_shop_app/features/cart/domain/cart.dart';
+import 'package:horns_and_hooves_shop_app/features/cart/domain/usecases/save_cart.dart';
 import 'package:horns_and_hooves_shop_app/features/cart/presentation/cart_cubit.dart';
 import 'package:horns_and_hooves_shop_app/features/cart/presentation/cart_quantity_control.dart';
 import 'package:horns_and_hooves_shop_app/l10n/l10n.dart';
@@ -12,7 +13,7 @@ Future<CartCubit> _pump(
   WidgetTester tester, [
   Cart initial = const Cart(),
 ]) async {
-  final cart = CartCubit(FakeCartStorage(), initial);
+  final cart = CartCubit(SaveCart(FakeCartRepository()), initial);
   addTearDown(cart.close);
   await tester.pumpWidget(
     BlocProvider.value(

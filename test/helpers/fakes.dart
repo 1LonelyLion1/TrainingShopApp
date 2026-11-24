@@ -1,12 +1,16 @@
 import 'dart:async';
 
 import 'package:horns_and_hooves_shop_app/core/network/connectivity_service.dart';
-import 'package:horns_and_hooves_shop_app/features/cart/data/cart_storage.dart';
 import 'package:horns_and_hooves_shop_app/features/cart/domain/cart.dart';
+import 'package:horns_and_hooves_shop_app/features/cart/domain/cart_repository.dart';
 import 'package:horns_and_hooves_shop_app/features/catalog/data/catalog_api.dart';
 import 'package:horns_and_hooves_shop_app/features/catalog/data/catalog_cache.dart';
+import 'package:horns_and_hooves_shop_app/features/catalog/domain/catalog_repository.dart';
 import 'package:horns_and_hooves_shop_app/features/catalog/domain/product.dart';
-import 'package:horns_and_hooves_shop_app/features/settings/data/locale_storage.dart';
+import 'package:horns_and_hooves_shop_app/features/catalog/domain/usecases/get_cached_catalog.dart';
+import 'package:horns_and_hooves_shop_app/features/catalog/domain/usecases/refresh_catalog.dart';
+import 'package:horns_and_hooves_shop_app/features/catalog/presentation/catalog_cubit.dart';
+import 'package:horns_and_hooves_shop_app/features/settings/domain/locale_repository.dart';
 
 Product product({
   int id = 1,
@@ -21,6 +25,16 @@ Product product({
   imageUrl: '',
   rating: 4.5,
   ratingCount: 10,
+);
+
+/// Собирает CatalogCubit так же, как DI: через use case поверх репозитория.
+CatalogCubit catalogCubit({
+  required CatalogRepository repository,
+  required ConnectivityService connectivity,
+}) => CatalogCubit(
+  getCachedCatalog: GetCachedCatalog(repository),
+  refreshCatalog: RefreshCatalog(repository),
+  connectivity: connectivity,
 );
 
 class FakeCatalogApi implements CatalogApi {
@@ -72,8 +86,8 @@ class FakeConnectivity implements ConnectivityService {
   Stream<bool> get onlineChanges => _controller.stream;
 }
 
-class FakeLocaleStorage implements LocaleStorage {
-  FakeLocaleStorage([this.saved]);
+class FakeLocaleRepository implements LocaleRepository {
+  FakeLocaleRepository([this.saved]);
 
   String? saved;
 
@@ -84,7 +98,7 @@ class FakeLocaleStorage implements LocaleStorage {
   Future<void> write(String? languageCode) async => saved = languageCode;
 }
 
-class FakeCartStorage implements CartStorage {
+class FakeCartRepository implements CartRepository {
   Cart saved = const Cart();
   final List<Cart> history = [];
 

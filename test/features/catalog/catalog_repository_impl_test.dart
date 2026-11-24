@@ -1,13 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:horns_and_hooves_shop_app/core/error/app_failure.dart';
-import 'package:horns_and_hooves_shop_app/features/catalog/data/catalog_repository.dart';
+import 'package:horns_and_hooves_shop_app/features/catalog/data/catalog_repository_impl.dart';
 
 import '../../helpers/fakes.dart';
 
 void main() {
   test('успешная загрузка возвращает товары и пишет кеш', () async {
     final cache = FakeCatalogCache();
-    final repository = CatalogRepository(
+    final repository = CatalogRepositoryImpl(
       api: FakeCatalogApi(() async => [product()]),
       cache: cache,
     );
@@ -18,7 +18,7 @@ void main() {
 
   test('ошибка сети пробрасывается и не трогает кеш', () async {
     final cache = FakeCatalogCache([product()]);
-    final repository = CatalogRepository(
+    final repository = CatalogRepositoryImpl(
       api: FakeCatalogApi(() async => throw const NoConnectionFailure()),
       cache: cache,
     );
@@ -32,7 +32,7 @@ void main() {
 
   test('пустой результат не стирает кеш', () async {
     final cache = FakeCatalogCache([product()]);
-    final repository = CatalogRepository(
+    final repository = CatalogRepositoryImpl(
       api: FakeCatalogApi(() async => const []),
       cache: cache,
     );
@@ -44,7 +44,7 @@ void main() {
 
   test('сбой записи кеша не скрывает свежие данные', () async {
     final cache = FakeCatalogCache()..failOnWrite = true;
-    final repository = CatalogRepository(
+    final repository = CatalogRepositoryImpl(
       api: FakeCatalogApi(() async => [product()]),
       cache: cache,
     );

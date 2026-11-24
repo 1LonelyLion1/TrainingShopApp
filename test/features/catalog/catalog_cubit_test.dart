@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:horns_and_hooves_shop_app/core/error/app_failure.dart';
-import 'package:horns_and_hooves_shop_app/features/catalog/data/catalog_repository.dart';
+import 'package:horns_and_hooves_shop_app/features/catalog/data/catalog_repository_impl.dart';
 import 'package:horns_and_hooves_shop_app/features/catalog/domain/catalog_filter.dart';
 import 'package:horns_and_hooves_shop_app/features/catalog/domain/product.dart';
 import 'package:horns_and_hooves_shop_app/features/catalog/presentation/catalog_cubit.dart';
@@ -14,8 +14,11 @@ CatalogCubit _cubit(
   FakeCatalogApi api, {
   FakeCatalogCache? cache,
   FakeConnectivity? connectivity,
-}) => CatalogCubit(
-  repository: CatalogRepository(api: api, cache: cache ?? FakeCatalogCache()),
+}) => catalogCubit(
+  repository: CatalogRepositoryImpl(
+    api: api,
+    cache: cache ?? FakeCatalogCache(),
+  ),
   connectivity: connectivity ?? FakeConnectivity(),
 );
 

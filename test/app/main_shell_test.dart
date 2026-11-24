@@ -1,28 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:horns_and_hooves_shop_app/app/app.dart';
+import 'package:horns_and_hooves_shop_app/features/cart/domain/usecases/save_cart.dart';
 import 'package:horns_and_hooves_shop_app/features/cart/presentation/cart_cubit.dart';
 import 'package:horns_and_hooves_shop_app/features/cart/presentation/cart_screen.dart';
-import 'package:horns_and_hooves_shop_app/features/catalog/data/catalog_repository.dart';
-import 'package:horns_and_hooves_shop_app/features/catalog/presentation/catalog_cubit.dart';
+import 'package:horns_and_hooves_shop_app/features/catalog/data/catalog_repository_impl.dart';
 import 'package:horns_and_hooves_shop_app/features/catalog/presentation/catalog_screen.dart';
 import 'package:horns_and_hooves_shop_app/features/catalog/presentation/filter_sheet.dart';
 import 'package:horns_and_hooves_shop_app/features/catalog/presentation/product_details_screen.dart';
+import 'package:horns_and_hooves_shop_app/features/settings/domain/usecases/save_language.dart';
 import 'package:horns_and_hooves_shop_app/features/settings/presentation/locale_cubit.dart';
 
 import '../helpers/fakes.dart';
 
 Future<CartCubit> _pumpApp(WidgetTester tester) async {
-  final catalog = CatalogCubit(
-    repository: CatalogRepository(
+  final catalog = catalogCubit(
+    repository: CatalogRepositoryImpl(
       api: FakeCatalogApi(() async => [product()]),
       cache: FakeCatalogCache(),
     ),
     connectivity: FakeConnectivity(),
   );
-  final cart = CartCubit(FakeCartStorage());
+  final cart = CartCubit(SaveCart(FakeCartRepository()));
   addTearDown(catalog.close);
-  final locale = LocaleCubit(FakeLocaleStorage('ru'), const Locale('ru'));
+  final locale = LocaleCubit(
+    SaveLanguage(FakeLocaleRepository('ru')),
+    const Locale('ru'),
+  );
   addTearDown(cart.close);
   addTearDown(locale.close);
 

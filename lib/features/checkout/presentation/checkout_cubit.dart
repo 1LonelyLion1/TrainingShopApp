@@ -4,7 +4,7 @@ import 'package:injectable/injectable.dart' show injectable;
 
 import '../../cart/presentation/cart_cubit.dart';
 import '../domain/checkout_validators.dart';
-import '../domain/order_number.dart';
+import '../domain/usecases/place_order.dart';
 
 enum CheckoutField { name, email, phone, address }
 
@@ -42,9 +42,11 @@ class CheckoutState extends Equatable {
 
 @injectable
 class CheckoutCubit extends Cubit<CheckoutState> {
-  CheckoutCubit(this._cart) : super(const CheckoutState());
+  CheckoutCubit(this._cart, this._placeOrder) : super(const CheckoutState());
 
   final CartCubit _cart;
+  final PlaceOrder _placeOrder;
+  bool _isSubmitting = false;
 
   void changed(CheckoutField field, String value) {
     emit(
@@ -63,16 +65,26 @@ class CheckoutCubit extends Cubit<CheckoutState> {
   }
 
   Future<void> submit() async {
-    if (!state.isValid || state.orderNumber != null || _cart.state.isEmpty) {
+    if (_isSubmitting ||
+        !state.isValid ||
+        state.orderNumber != null ||
+        _cart.state.isEmpty) {
       return;
     }
-    emit(
-      CheckoutState(
-        values: state.values,
-        touched: state.touched,
-        orderNumber: generateOrderNumber(),
-      ),
-    );
-    await _cart.clear();
+    _isSubmitting = true;
+    try {
+      final number = await _placeOrder(_cart.state);
+      if (isClosed) return;
+      emit(
+        CheckoutState(
+          values: state.values,
+          touched: state.touched,
+          orderNumber: number,
+        ),
+      );
+      await _cart.clear();
+    } finally {
+      _isSubmitting = false;
+    }
   }
 }

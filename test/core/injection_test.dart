@@ -3,12 +3,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:horns_and_hooves_shop_app/core/database/app_database.dart';
 import 'package:horns_and_hooves_shop_app/core/di/injection.dart';
 import 'package:horns_and_hooves_shop_app/core/network/connectivity_service.dart';
-import 'package:horns_and_hooves_shop_app/features/cart/data/cart_storage.dart';
+import 'package:horns_and_hooves_shop_app/features/cart/data/cart_repository_impl.dart';
 import 'package:horns_and_hooves_shop_app/features/cart/domain/cart.dart';
+import 'package:horns_and_hooves_shop_app/features/cart/domain/cart_repository.dart';
 import 'package:horns_and_hooves_shop_app/features/cart/presentation/cart_cubit.dart';
 import 'package:horns_and_hooves_shop_app/features/catalog/data/catalog_api.dart';
 import 'package:horns_and_hooves_shop_app/features/catalog/data/catalog_cache.dart';
-import 'package:horns_and_hooves_shop_app/features/catalog/data/catalog_repository.dart';
+import 'package:horns_and_hooves_shop_app/features/catalog/data/catalog_repository_impl.dart';
+import 'package:horns_and_hooves_shop_app/features/catalog/domain/catalog_repository.dart';
 import 'package:horns_and_hooves_shop_app/features/catalog/presentation/catalog_cubit.dart';
 import 'package:horns_and_hooves_shop_app/features/checkout/presentation/checkout_cubit.dart';
 import 'package:horns_and_hooves_shop_app/features/settings/presentation/locale_cubit.dart';
@@ -37,16 +39,16 @@ void main() {
 
     expect(getIt<CatalogApi>(), isA<DioCatalogApi>());
     expect(getIt<CatalogCache>(), isA<DriftCatalogCache>());
-    expect(getIt<CartStorage>(), isA<DriftCartStorage>());
+    expect(getIt<CartRepository>(), isA<DriftCartRepository>());
     expect(getIt<ConnectivityService>(), isA<ConnectivityPlusService>());
-    expect(getIt<CatalogRepository>(), isNotNull);
+    expect(getIt<CatalogRepository>(), isA<CatalogRepositoryImpl>());
     expect(identical(getIt<CatalogCubit>(), getIt<CatalogCubit>()), isTrue);
     await getIt<CatalogCubit>().close();
   });
 
   test('корзина загружается из базы при инициализации', () async {
     final cart = const Cart().add(product()).setQuantity(1, 3);
-    await DriftCartStorage(database).write(cart);
+    await DriftCartRepository(database).write(cart);
 
     await configureDependencies(environment: 'test');
 

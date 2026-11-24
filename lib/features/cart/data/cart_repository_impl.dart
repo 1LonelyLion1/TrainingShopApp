@@ -5,16 +5,11 @@ import 'package:injectable/injectable.dart' show LazySingleton;
 import '../../../core/database/app_database.dart';
 import '../../catalog/domain/product.dart';
 import '../domain/cart.dart';
+import '../domain/cart_repository.dart';
 
-abstract interface class CartStorage {
-  Future<Cart> read();
-
-  Future<void> write(Cart cart);
-}
-
-@LazySingleton(as: CartStorage)
-class DriftCartStorage implements CartStorage {
-  DriftCartStorage(this._db);
+@LazySingleton(as: CartRepository)
+class DriftCartRepository implements CartRepository {
+  DriftCartRepository(this._db);
 
   final AppDatabase _db;
 
